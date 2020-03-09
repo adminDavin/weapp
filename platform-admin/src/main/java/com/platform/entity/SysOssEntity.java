@@ -26,6 +26,10 @@ public class SysOssEntity implements Serializable {
      * 创建时间
      */
     private Date createDate;
+    /**
+     * 名称
+     */
+    private String groupName;
 
     /**
      * 设置：
@@ -67,5 +71,13 @@ public class SysOssEntity implements Serializable {
      */
     public Date getCreateDate() {
         return createDate;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 }

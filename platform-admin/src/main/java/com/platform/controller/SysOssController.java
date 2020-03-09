@@ -2,6 +2,7 @@ package com.platform.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.platform.annotation.SysLog;
+import com.platform.common.service.FileMangeService;
 import com.platform.entity.SysOssEntity;
 import com.platform.oss.CloudStorageConfig;
 import com.platform.oss.OSSFactory;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,48 +64,48 @@ public class SysOssController {
     }
 
 
-    /**
-     * 获取云存储配置信息
-     *
-     * @return R
-     */
-    @RequestMapping("/config")
-    @RequiresPermissions("sys:oss:all")
-    public R config() {
-        CloudStorageConfig config = sysConfigService.getConfigObject(KEY, CloudStorageConfig.class);
-
-        return R.ok().put("config", config);
-    }
-
-
-    /**
-     * 保存云存储配置信息
-     *
-     * @param config 配置信息
-     * @return R
-     */
-    @SysLog("保存云存储配置信息")
-    @RequestMapping("/saveConfig")
-    @RequiresPermissions("sys:oss:all")
-    public R saveConfig(@RequestBody CloudStorageConfig config) {
-        //校验类型
-        ValidatorUtils.validateEntity(config);
-
-        if (config.getType() == Constant.CloudService.QINIU.getValue()) {
-            //校验七牛数据
-            ValidatorUtils.validateEntity(config, QiniuGroup.class);
-        } else if (config.getType() == Constant.CloudService.ALIYUN.getValue()) {
-            //校验阿里云数据
-            ValidatorUtils.validateEntity(config, AliyunGroup.class);
-        } else if (config.getType() == Constant.CloudService.QCLOUD.getValue()) {
-            //校验腾讯云数据
-            ValidatorUtils.validateEntity(config, QcloudGroup.class);
-        }
-
-        sysConfigService.updateValueByKey(KEY, JSON.toJSONString(config));
-
-        return R.ok();
-    }
+//    /**
+//     * 获取云存储配置信息
+//     *
+//     * @return R
+//     */
+//    @RequestMapping("/config")
+//    @RequiresPermissions("sys:oss:all")
+//    public R config() {
+//        CloudStorageConfig config = sysConfigService.getConfigObject(KEY, CloudStorageConfig.class);
+//
+//        return R.ok().put("config", config);
+//    }
+//
+//
+//    /**
+//     * 保存云存储配置信息
+//     *
+//     * @param config 配置信息
+//     * @return R
+//     */
+//    @SysLog("保存云存储配置信息")
+//    @RequestMapping("/saveConfig")
+//    @RequiresPermissions("sys:oss:all")
+//    public R saveConfig(@RequestBody CloudStorageConfig config) {
+//        //校验类型
+//        ValidatorUtils.validateEntity(config);
+//
+//        if (config.getType() == Constant.CloudService.QINIU.getValue()) {
+//            //校验七牛数据
+//            ValidatorUtils.validateEntity(config, QiniuGroup.class);
+//        } else if (config.getType() == Constant.CloudService.ALIYUN.getValue()) {
+//            //校验阿里云数据
+//            ValidatorUtils.validateEntity(config, AliyunGroup.class);
+//        } else if (config.getType() == Constant.CloudService.QCLOUD.getValue()) {
+//            //校验腾讯云数据
+//            ValidatorUtils.validateEntity(config, QcloudGroup.class);
+//        }
+//
+//        sysConfigService.updateValueByKey(KEY, JSON.toJSONString(config));
+//
+//        return R.ok();
+//    }
 
     /**
      * 上传文件
@@ -112,27 +114,49 @@ public class SysOssController {
      * @return R
      * @throws Exception 异常
      */
+//    @RequestMapping("/upload")
+//    public R upload(@RequestParam("file") MultipartFile file) throws Exception {
+//        if (file.isEmpty()) {
+//            throw new RRException("上传文件不能为空");
+//        }
+//        //上传文件
+//        String url = OSSFactory.build().upload(file);
+//
+//        //保存文件信息
+//        SysOssEntity ossEntity = new SysOssEntity();
+//        ossEntity.setUrl(url);
+//        ossEntity.setCreateDate(new Date());
+//        sysOssService.save(ossEntity);
+//
+//        R r = new R();
+//        r.put("url", url);
+//        r.put("link", url);
+//        return r;
+//    }
+
     @RequestMapping("/upload")
     public R upload(@RequestParam("file") MultipartFile file) throws Exception {
+        System.out.println("000000");
         if (file.isEmpty()) {
             throw new RRException("上传文件不能为空");
         }
-        //上传文件
-        String url = OSSFactory.build().upload(file);
-
-        //保存文件信息
+        FileMangeService fileMangeService = new FileMangeService();
+        String arr[];
+        System.out.println(file.getBytes());
+        arr = fileMangeService.uploadFile(file.getBytes(), "-1");
+        System.out.println("aaaaaa");
         SysOssEntity ossEntity = new SysOssEntity();
-        ossEntity.setUrl(url);
+        ossEntity.setUrl("http://http://39.100.237.144:3000/platform-framework/goodsspecification/picture?getRemoteFilename="+arr[1]);
         ossEntity.setCreateDate(new Date());
+        ossEntity.setGroupName(arr[0]);
         sysOssService.save(ossEntity);
-
+        System.out.println("cccccc");
         R r = new R();
-        r.put("url", url);
-        r.put("link", url);
+        r.put("url", "http://39.100.237.144:3000/platform-framework/goodsspecification/picture?getRemoteFilename="+arr[1]);
+        r.put("link", arr[0]);
+        System.out.println("bbbbbb");
         return r;
     }
-
-
     /**
      * 删除图片
      *

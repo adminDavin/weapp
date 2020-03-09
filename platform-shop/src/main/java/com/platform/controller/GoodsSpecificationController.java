@@ -1,8 +1,12 @@
 package com.platform.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
+import com.platform.common.service.FileMangeService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +21,11 @@ import com.platform.utils.PageUtils;
 import com.platform.utils.Query;
 import com.platform.utils.R;
 import com.platform.utils.ShiroUtils;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import static com.alibaba.druid.sql.parser.Token.LOCK;
 
 /**
  * 商品对应规格表值表Controller
@@ -42,13 +51,26 @@ public class GoodsSpecificationController {
         Query query = new Query(params);
 
         List<GoodsSpecificationEntity> goodsSpecificationList = goodsSpecificationService.queryList(query);
+        GoodsSpecificationEntity goodsSpecificationEntity =new GoodsSpecificationEntity();
         int total = goodsSpecificationService.queryTotal(query);
 
         PageUtils pageUtil = new PageUtils(goodsSpecificationList, total, query.getLimit(), query.getPage());
 
         return R.ok().put("page", pageUtil);
     }
-
+    @RequestMapping("/picture")
+    public void picture(String getRemoteFilename, HttpServletResponse response) throws Exception {
+        FileMangeService fileManageService = new FileMangeService();
+        synchronized (LOCK) {
+            byte[] file = fileManageService.downloadFile("group1", getRemoteFilename);
+            ByteArrayInputStream stream = new ByteArrayInputStream(file);
+            BufferedImage readImg = ImageIO.read(stream);
+            stream.reset();
+            OutputStream outputStream = response.getOutputStream();
+            ImageIO.write(readImg, "png", outputStream);
+            outputStream.close();
+        }
+    }
     /**
      * 查看信息
      */

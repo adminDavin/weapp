@@ -22,12 +22,14 @@
 		insert into sys_oss
 		(
 			`url`, 
-			`create_date`
+			`create_date`,
+			`group_name`
 		)
 		values
 		(
 			#{url}, 
-			#{createDate}
+			#{createDate},
+			#{groupName}
 		)
 	</insert>
 	 
