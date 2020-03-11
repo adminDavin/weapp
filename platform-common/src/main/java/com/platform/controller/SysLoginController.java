@@ -3,6 +3,7 @@ package com.platform.controller;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 import com.platform.annotation.SysLog;
+import com.platform.common.service.FileMangeService;
 import com.platform.utils.R;
 import com.platform.utils.ShiroUtils;
 import org.apache.shiro.authc.*;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.imageio.ImageIO;
@@ -19,7 +21,11 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+
+import static com.alibaba.druid.sql.parser.Token.LOCK;
 
 /**
  * 登录相关
@@ -47,6 +53,20 @@ public class SysLoginController {
 
         ServletOutputStream out = response.getOutputStream();
         ImageIO.write(image, "jpg", out);
+    }
+
+    @RequestMapping("/picture")
+    public void picture(@RequestParam String getRemoteFilename, HttpServletResponse response) throws Exception {
+        FileMangeService fileManageService = new FileMangeService();
+        synchronized (LOCK) {
+            byte[] file = fileManageService.downloadFile("group1", getRemoteFilename);
+            ByteArrayInputStream stream = new ByteArrayInputStream(file);
+            BufferedImage readImg = ImageIO.read(stream);
+            stream.reset();
+            OutputStream outputStream = response.getOutputStream();
+            ImageIO.write(readImg, "png", outputStream);
+            outputStream.close();
+        }
     }
 
     /**

@@ -199,17 +199,5 @@ public class SysOssController {
         return list;
     }
 
-    @RequestMapping("/picture")
-    public void picture(@RequestParam String getRemoteFilename, HttpServletResponse response) throws Exception {
-        FileMangeService fileManageService = new FileMangeService();
-        synchronized (LOCK) {
-            byte[] file = fileManageService.downloadFile("group1", getRemoteFilename);
-            ByteArrayInputStream stream = new ByteArrayInputStream(file);
-            BufferedImage readImg = ImageIO.read(stream);
-            stream.reset();
-            OutputStream outputStream = response.getOutputStream();
-            ImageIO.write(readImg, "png", outputStream);
-            outputStream.close();
-        }
-    }
+
 }
