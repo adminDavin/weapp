@@ -58,19 +58,7 @@ public class GoodsSpecificationController {
 
         return R.ok().put("page", pageUtil);
     }
-    @RequestMapping("/picture/{getRemoteFilename}")
-    public void picture(String getRemoteFilename, HttpServletResponse response) throws Exception {
-        FileMangeService fileManageService = new FileMangeService();
-        synchronized (LOCK) {
-            byte[] file = fileManageService.downloadFile("group1", getRemoteFilename);
-            ByteArrayInputStream stream = new ByteArrayInputStream(file);
-            BufferedImage readImg = ImageIO.read(stream);
-            stream.reset();
-            OutputStream outputStream = response.getOutputStream();
-            ImageIO.write(readImg, "png", outputStream);
-            outputStream.close();
-        }
-    }
+
     /**
      * 查看信息
      */

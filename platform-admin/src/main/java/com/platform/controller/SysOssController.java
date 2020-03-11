@@ -21,11 +21,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static com.alibaba.druid.sql.parser.Token.LOCK;
 
 /**
  * 文件上传Controller
@@ -146,7 +153,7 @@ public class SysOssController {
         arr = fileMangeService.uploadFile(file.getBytes(), "-1");
         System.out.println("aaaaaa");
         SysOssEntity ossEntity = new SysOssEntity();
-        ossEntity.setUrl("http://http://39.100.237.144:3000/platform-framework/goodsspecification/picture?getRemoteFilename="+arr[1]);
+        ossEntity.setUrl("http://39.100.237.144:3000/platform-framework/goodsspecification/picture?getRemoteFilename="+arr[1]);
         ossEntity.setCreateDate(new Date());
         ossEntity.setGroupName(arr[0]);
         sysOssService.save(ossEntity);
@@ -190,5 +197,19 @@ public class SysOssController {
             }
         }
         return list;
+    }
+
+    @RequestMapping("/picture")
+    public void picture(@RequestParam String getRemoteFilename, HttpServletResponse response) throws Exception {
+        FileMangeService fileManageService = new FileMangeService();
+        synchronized (LOCK) {
+            byte[] file = fileManageService.downloadFile("group1", getRemoteFilename);
+            ByteArrayInputStream stream = new ByteArrayInputStream(file);
+            BufferedImage readImg = ImageIO.read(stream);
+            stream.reset();
+            OutputStream outputStream = response.getOutputStream();
+            ImageIO.write(readImg, "png", outputStream);
+            outputStream.close();
+        }
     }
 }
