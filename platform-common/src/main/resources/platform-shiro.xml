@@ -52,6 +52,7 @@
 	        	/login.html=anon
 	        	/sys/login=anon
 	        	/captcha.jpg=anon
+				/picture.jpg=anon
 	        	/**=authc
 	        </value>
 	    </property>
