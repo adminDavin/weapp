@@ -54,7 +54,7 @@ public class SysLoginController {
         ServletOutputStream out = response.getOutputStream();
         ImageIO.write(image, "jpg", out);
     }
-    @RequestMapping("/picture")
+    @RequestMapping("/picture.jpg")
     public void picture(@RequestParam String getRemoteFilename, HttpServletResponse response) throws Exception {
         FileMangeService fileManageService = new FileMangeService();
         synchronized (LOCK) {
