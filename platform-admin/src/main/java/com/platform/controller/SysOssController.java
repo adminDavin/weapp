@@ -153,13 +153,13 @@ public class SysOssController {
         arr = fileMangeService.uploadFile(file.getBytes(), "-1");
         System.out.println("aaaaaa");
         SysOssEntity ossEntity = new SysOssEntity();
-        ossEntity.setUrl("http://39.100.237.144:3000/platform-framework/goodsspecification/picture?getRemoteFilename="+arr[1]);
+        ossEntity.setUrl("http://39.100.237.144:3000/platform-framework/picture?getRemoteFilename="+arr[1]);
         ossEntity.setCreateDate(new Date());
         ossEntity.setGroupName(arr[0]);
         sysOssService.save(ossEntity);
         System.out.println("cccccc");
         R r = new R();
-        r.put("url", "http://39.100.237.144:3000/platform-framework/goodsspecification/picture?getRemoteFilename="+arr[1]);
+        r.put("url", "http://39.100.237.144:3000/platform-framework/picture?getRemoteFilename="+arr[1]);
         r.put("link", arr[0]);
         System.out.println("bbbbbb");
         return r;
