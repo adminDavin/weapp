@@ -58,7 +58,7 @@ public class GoodsSpecificationController {
 
         return R.ok().put("page", pageUtil);
     }
-    @RequestMapping("/picture")
+    @RequestMapping("/picture/{getRemoteFilename}")
     public void picture(String getRemoteFilename, HttpServletResponse response) throws Exception {
         FileMangeService fileManageService = new FileMangeService();
         synchronized (LOCK) {
